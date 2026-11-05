@@ -1,0 +1,16 @@
+{
+	"exclude": [
+		"@commitlint/config-conventional",
+		"commitlint/cli",
+		"katex",
+		"lint-staged",
+		"release-it"
+	],
+	"force": true,
+	"includeLocked": true,
+	"maturityPeriod": 7,
+	"packageMode": {
+		"@types/node": "minor",
+		"typescript": "minor"
+	}
+}
