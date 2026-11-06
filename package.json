@@ -77,7 +77,7 @@
 		"@zokugun/eslint-config-style": "0.3.1",
 		"@zokugun/eslint-config-test": "0.2.0",
 		"@zokugun/eslint-config-ts": "0.3.2",
-		"@zokugun/fs-extra-plus": "0.6.5",
+		"@zokugun/fs-extra-plus": "0.6.6",
 		"@zokugun/tsc-leda": "0.9.2",
 		"eslint": "10.13.0",
 		"fixpack": "4.0.0",
