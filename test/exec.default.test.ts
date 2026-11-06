@@ -3,7 +3,7 @@ import type { Options } from '../src/types.js';
 import fse from '@zokugun/fs-extra-plus';
 import { expect, it } from 'vitest';
 
-import { FIXTURES_DIRECTORY, IS_WINDOWS } from './utils/constants.js';
+import { FIXTURES_DIRECTORY, IS_MACOS, IS_WINDOWS } from './utils/constants.js';
 import { exec } from '../src/exec.js';
 
 it('pid is number', async () => {
@@ -91,8 +91,11 @@ it('non-existent, with shell', async () => {
 		expect(result.error!.stderr).toContain(`'definitelyNonExistent' is not recognized as an internal or external command,\r\noperable program or batch file`);
 		expect(result.error!.stdout).toBe('');
 	}
-	else {
+	else if(IS_MACOS) {
 		expect(result.error!.stderr).toContain('definitelyNonExistent: command not found');
+	}
+	else {
+		expect(result.error!.stderr).toContain('definitelyNonExistent: not found');
 	}
 });
 
