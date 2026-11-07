@@ -1,7 +1,7 @@
 {
 	"name": "@zokugun/picoexec",
 	"description": "A lightweight tool for running shell commands and reading their output easily.",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"author": {
 		"name": "Baptiste Augrain",
 		"email": "daiyam@zokugun.org"
