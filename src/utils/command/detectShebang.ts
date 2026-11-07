@@ -23,7 +23,7 @@ export function detectShebang(file: string): string | null {
 		}
 	}
 
-	const match = buffer.toString().match(SHEBANG_REGEX);
+	const match = SHEBANG_REGEX.exec(buffer.toString());
 
 	if(match === null) {
 		return null;

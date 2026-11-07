@@ -86,29 +86,8 @@ export class ExecProcess implements Subprocess {
 	public spawn(): void { // {{{
 		this._start = process.hrtime.bigint();
 
-		// const options = { ...this._options };
-		// const cwd = options.cwd ?? process.cwd();
-		// const signals: AbortSignal[] = [];
-
 		this.reset();
 
-		// if(options.timeout !== undefined) {
-		// 	signals.push(AbortSignal.timeout(options.timeout));
-		// }
-
-		// if(options.signal !== undefined) {
-		// 	signals.push(options.signal);
-		// }
-
-		// if(signals.length > 0) {
-		// 	// eslint-disable-next-line no-multi-assign
-		// 	options.signal = this._signal = combineSignals(signals);
-		// }
-
-		// options.env = computeEnv(options.env, options.preferLocal ?? false, options.localDir ?? cwd);
-
-		// console.log(options.stdout)
-		// console.log(this._options)
 		const normalizedOptions = normalizeOptions(this._options);
 
 		if(normalizedOptions.signal) {
@@ -116,8 +95,6 @@ export class ExecProcess implements Subprocess {
 		}
 
 		const { command: spawnCommand, args: spawnArgs, options: spawnOptions } = normalizeCommand(this._command, this._args, normalizedOptions);
-
-		// console.log(spawnOptions)
 
 		let task: ChildProcess;
 
@@ -188,17 +165,6 @@ export class ExecProcess implements Subprocess {
 
 		handle.removeAllListeners();
 
-		// if(this._thrownError) {
-		// 	return err(toExecError(this._thrownError));
-		// }
-
-		// if (
-		// 	this._options?.throwOnError &&
-		// 	((this.exitCode !== 0 && this.exitCode !== undefined) ||
-		// 		this.signalCode !== null)
-		// ) {
-		// 	throw new NonZeroExitError(this, undefined, this._command, this._args);
-		// }
 		if(this._thrownError || (this.exitCode !== 0 && this.exitCode !== undefined) || this.signalCode !== undefined) {
 			this._failed = true;
 		}
@@ -294,17 +260,10 @@ export class ExecProcess implements Subprocess {
 			stdout,
 		};
 
-		if(this._options.stdin instanceof ExecProcess) {
-			// result.pipedFrom = this._options.stdin;
-		}
-
-		// if (this._options.throwOnError &&
-		// 	((this.exitCode !== 0 && this.exitCode !== undefined) ||
-		// 		this.signalCode !== null)
-		// ) {
-		// 	// throw new NonZeroExitError(this, result, this._command, this._args);
-		// 	return toErrorResult(this._thrownError);
+		// if(this._options.stdin instanceof ExecProcess) {
+		// 	result.pipedFrom = this._options.stdin;
 		// }
+
 		if((this.exitCode !== 0 && this.exitCode !== undefined) || this.signalCode !== undefined) {
 			this._failed = true;
 

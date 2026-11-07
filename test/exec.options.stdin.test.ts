@@ -10,7 +10,7 @@ it('supports stdin passed as a string', async () => {
 	expect(result.value!.stderr).toBe('');
 	expect(result.value!.exitCode).toBe(0);
 
-	// Ensuring that empty string doesn’t cause issues
+	// ensuring that empty string doesn’t cause issues
 	result = await exec('node', ['-e', "process.stdout.write(String(fs.readFileSync(0,'utf8').length))"], { stdin: '' });
 
 	expect(result.value!.stdout).toBe('0');

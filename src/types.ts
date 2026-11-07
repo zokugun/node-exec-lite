@@ -1,21 +1,6 @@
 import type { ChildProcess, SpawnOptions as ProcessSpawnOptions } from 'node:child_process';
 import type { Result } from '@zokugun/xtry';
 
-// export type ErrorResult = {
-// 	all?: string;
-// 	command: string;
-// 	durationMs: number;
-// 	error?: Error;
-// 	exitCode?: number;
-// 	fails: true;
-// 	isCanceled: boolean;
-// 	pipedFrom?: ExecResult;
-// 	stderr?: string;
-// 	stdout?: string;
-// };
-
-// export type ErrorResult = { fails: true } & ExecError;
-
 export type ExecFailure = {
 	all?: string;
 	canceled: boolean;
@@ -29,7 +14,6 @@ export type ExecFailure = {
 	stdout?: string;
 };
 
-// export type ExecResult = ErrorResult | SuccessResult;
 export type ExecResult = Result<ExecSuccess, ExecFailure>;
 
 export type ExecSuccess = {
@@ -38,7 +22,6 @@ export type ExecSuccess = {
 	durationMs: number;
 	error?: undefined;
 	exitCode: number;
-	// fails: false;
 	pipedFrom?: ExecResult;
 	stderr: string;
 	stdout: string;

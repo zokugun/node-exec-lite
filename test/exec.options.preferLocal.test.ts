@@ -54,10 +54,10 @@ it('with-cwd', async () => {
 
 	expect(result.fails).toBe(false);
 
-	// Adds ./node_modules/.bin relative to cwd
+	// adds ./node_modules/.bin relative to cwd
 	expect(result.value!.stdout).toMatch(fse.join(FIXTURES_DIRECTORY, 'node_modules', '.bin'));
 
-	// Also adds from root of repository, two directories up from fixtures
+	// also adds from root of repository, two directories up from fixtures
 	const repoRootDir = fse.join(FIXTURES_DIRECTORY, '..');
 
 	expect(result.value!.stdout).toMatch(fse.join(repoRootDir, 'node_modules', '.bin'));
@@ -76,10 +76,10 @@ it('with-localDir', async () => {
 
 	expect(result.fails).toBe(false);
 
-	// Adds ./node_modules/.bin relative to cwd
+	// adds ./node_modules/.bin relative to cwd
 	expect(result.value!.stdout).toMatch(fse.join(FIXTURES_DIRECTORY, 'node_modules', '.bin'));
 
-	// Also adds from root of repository, two directories up from fixtures
+	// also adds from root of repository, two directories up from fixtures
 	const repoRootDir = fse.join(FIXTURES_DIRECTORY, '..');
 
 	expect(result.value!.stdout).toMatch(fse.join(repoRootDir, 'node_modules', '.bin'));
