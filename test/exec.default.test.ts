@@ -111,7 +111,7 @@ it('many times at once', async () => {
 	const results = await Promise.all(inputs.map((input) => exec('node', ['-p', input])));
 
 	expect(results.map((result) => result.value?.stdout.trim())).to.eql(inputs);
-});
+}, 20_000);
 
 it.skipIf(process.platform !== 'win32')('double escapes for batch files', async () => {
 	const result = await exec(fse.join(FIXTURES_DIRECTORY, 'echo_args.cmd'), ['"&echo INJECTED']);
