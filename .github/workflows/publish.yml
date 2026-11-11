@@ -28,17 +28,5 @@ jobs:
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
 
-      - name: Build
-        run: |
-          npm ci
-          npm pack
-
-          TGZ_NAME=$(ls *.tgz)
-          CHECKSUM=$(sha256sum $TGZ_NAME | cut -d ' ' -f 1)
-
-          echo "TGZ_NAME=$TGZ_NAME" >> $GITHUB_ENV
-          echo "CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
-          echo "$CHECKSUM" > "$TGZ_NAME.sha256"
-
       - name: Publish to NPM Registry
         run: npm publish --provenance --access=public
