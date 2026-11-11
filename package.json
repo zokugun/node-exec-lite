@@ -1,7 +1,7 @@
 {
 	"name": "@zokugun/exec-lite",
 	"description": "A lightweight tool for running shell commands and reading their output easily.",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"author": {
 		"name": "Baptiste Augrain",
 		"email": "daiyam@zokugun.org"
