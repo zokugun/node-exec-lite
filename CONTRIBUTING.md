@@ -125,8 +125,8 @@ Supporting the project financially counts as a contribution (even if it's just a
    </tr>
 </table>
 
-[closed-discussions]: https://github.com/zokugun/node-picoexec/discussions?discussions_q=is%3Aclosed
-[closed-issues]: https://github.com/zokugun/node-picoexec/issues?q=is%3Aissue%20state%3Aclosed
-[discussions]: https://github.com/zokugun/node-picoexec/discussions
-[feature-requests]: https://github.com/zokugun/node-picoexec/discussions/new?category=feature-requests-ideas
-[issue-triage]: https://github.com/zokugun/node-picoexec/discussions/new?category=issue-triage
+[closed-discussions]: https://github.com/zokugun/node-exec-lite/discussions?discussions_q=is%3Aclosed
+[closed-issues]: https://github.com/zokugun/node-exec-lite/issues?q=is%3Aissue%20state%3Aclosed
+[discussions]: https://github.com/zokugun/node-exec-lite/discussions
+[feature-requests]: https://github.com/zokugun/node-exec-lite/discussions/new?category=feature-requests-ideas
+[issue-triage]: https://github.com/zokugun/node-exec-lite/discussions/new?category=issue-triage

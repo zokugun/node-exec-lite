@@ -6,7 +6,7 @@ body:
     attributes:
       value: |-
         > [!IMPORTANT]
-        > Please read through [the Discussion rules](https://github.com/zokugun/node-picoexec/discussions/2) and check for both existing [Discussions](https://github.com/zokugun/node-picoexec/discussions?discussions_q=) and [Issues](https://github.com/zokugun/node-picoexec/issues?q=sort%3Areactions-desc) prior to opening a new Discussion.
+        > Please read through [the Discussion rules](https://github.com/zokugun/node-exec-lite/discussions/2) and check for both existing [Discussions](https://github.com/zokugun/node-exec-lite/discussions?discussions_q=) and [Issues](https://github.com/zokugun/node-exec-lite/issues?q=sort%3Areactions-desc) prior to opening a new Discussion.
 
   - type: markdown
     attributes:
@@ -54,7 +54,7 @@ body:
       value: |-
         # User Acknowledgements
         > [!TIP]
-        > Use these links to review the existing [Discussions](https://github.com/zokugun/node-picoexec/discussions?discussions_q=) and [Issues](https://github.com/zokugun/node-picoexec/issues?q=sort%3Areactions-desc).
+        > Use these links to review the existing [Discussions](https://github.com/zokugun/node-exec-lite/discussions?discussions_q=) and [Issues](https://github.com/zokugun/node-exec-lite/issues?q=sort%3Areactions-desc).
 
   - type: checkboxes
     attributes:

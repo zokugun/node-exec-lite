@@ -1,5 +1,5 @@
 {
-	"name": "@zokugun/picoexec",
+	"name": "@zokugun/exec-lite",
 	"description": "A lightweight tool for running shell commands and reading their output easily.",
 	"version": "0.1.0",
 	"author": {
@@ -7,13 +7,13 @@
 		"email": "daiyam@zokugun.org"
 	},
 	"license": "MIT",
-	"homepage": "https://github.com/zokugun/node-picoexec",
+	"homepage": "https://github.com/zokugun/node-exec-lite",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/zokugun/node-picoexec.git"
+		"url": "git+https://github.com/zokugun/node-exec-lite.git"
 	},
 	"bugs": {
-		"url": "https://github.com/zokugun/node-picoexec/discussions/categories/issue-triage"
+		"url": "https://github.com/zokugun/node-exec-lite/discussions/categories/issue-triage"
 	},
 	"type": "module",
 	"exports": {

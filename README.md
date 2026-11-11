@@ -1,8 +1,8 @@
-[@zokugun/picoexec](https://github.com/zokugun/node-picoexec)
-==========================================================
+[@zokugun/exec-lite](https://github.com/zokugun/node-exec-lite)
+===============================================================
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
-[![NPM Version](https://img.shields.io/npm/v/@zokugun/picoexec?color=brightgreen)](https://www.npmjs.com/package/@zokugun/picoexec)
+[![NPM Version](https://img.shields.io/npm/v/@zokugun/exec-lite?color=brightgreen)](https://www.npmjs.com/package/@zokugun/exec-lite)
 [![NodeJS Version](https://img.shields.io/badge/node.js-%3E%3D%2018.20-green)](#requirements)
 [![Modules](https://img.shields.io/badge/modules-ESM%20%7C%20CJS-green)](#requirements)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-f87171?logo=kofi&logoColor=white)](https://ko-fi.com/daiyam)
@@ -28,7 +28,7 @@ Installation
 ------------
 
 ```bash
-npm add @zokugun/picoexec
+npm add @zokugun/exec-lite
 ```
 
 Requirements
@@ -45,7 +45,7 @@ Quick Start
 Run a command and wait for the final output. Use this when you only need the end result.
 
 ```typescript
-import { exec } from '@zokugun/picoexec';
+import { exec } from '@zokugun/exec-lite';
 
 async function runSimpleCommand(): Promise<void> {
    const result = await exec('echo', ['hello world']);
@@ -67,7 +67,7 @@ async function runSimpleCommand(): Promise<void> {
 Iterate over the process output in real-time.
 
 ```typescript
-import { exec } from '@zokugun/picoexec';
+import { exec } from '@zokugun/exec-lite';
 
 async function runPipedCommands(): Promise<void> {
    const task = exec('npm', ['install']);
@@ -87,7 +87,7 @@ async function runPipedCommands(): Promise<void> {
 Chain multiple commands together using the `.pipe()` method. The output of the first process is passed as the input to the second.
 
 ```typescript
-import { exec } from '@zokugun/picoexec';
+import { exec } from '@zokugun/exec-lite';
 
 async function runPipedCommands(): Promise<void> {
    const result = await exec('cat', ['package.json']).pipe('grep', ['dependencies']);
