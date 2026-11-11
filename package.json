@@ -6,5 +6,9 @@
 		"name": "Baptiste Augrain",
 		"email": "daiyam@zokugun.org"
 	},
-	"license": "MIT"
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/zokugun/node-picoexec.git"
+	}
 }
