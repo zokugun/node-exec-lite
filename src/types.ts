@@ -14,9 +14,11 @@ export type ExecFailure = {
 	signalCode?: string;
 	stderr?: string;
 	stdout?: string;
-};
+}
 
-export type ExecResult = Result<ExecSuccess, ExecFailure>;
+export type ResultMode = 'merged' | 'result';
+
+export type ExecResult<M extends ResultMode = 'result'> = M extends 'merged' ? string : Result<ExecSuccess, ExecFailure>;
 
 export type ExecSuccess = {
 	args: readonly string[];
@@ -33,14 +35,15 @@ export type ExecSuccess = {
 
 export type KillSignal = Parameters<ChildProcess['kill']>[0];
 
-export type Options = Omit<ProcessSpawnOptions, 'cwd' | 'env' | 'stdio'> & Readonly<Partial<{
+export type Options<M extends ResultMode = ResultMode> = Omit<ProcessSpawnOptions, 'cwd' | 'env' | 'stdio'> & Readonly<Partial<{
 	cwd?: string;
 	env: Readonly<Partial<Record<string, string>>>;
 	localDir: string;
 	preferLocal: boolean;
+	resultMode: M;
 	signal: AbortSignal;
 	stderr: StdioOption;
-	stdin: ExecResult | StdinOption | Subprocess;
+	stdin: ExecResult | StdinOption | Subprocess<ResultMode>;
 	stdio: readonly [StdinOption, ...readonly StdioOption[]] | SpawnOptions['stdio'];
 	stdout: StdioOption;
 }>>;
@@ -50,7 +53,7 @@ export type SpawnOptions = { cwd: string } & Omit<ProcessSpawnOptions, 'cwd'>;
 export type StdinOption = StdioOption | { readonly string?: string };
 export type StdioOption = Readonly<Exclude<SpawnOptions['stdio'], undefined>[number]>;
 
-export type Subprocess = AsyncIterable<string> & PromiseLike<ExecResult> & {
+export type Subprocess<M extends ResultMode = 'result'> = AsyncIterable<string> & PromiseLike<ExecResult<M>> & {
 	get aborted(): boolean;
 	get error(): Error | undefined;
 	get exitCode(): number | undefined;
@@ -58,7 +61,7 @@ export type Subprocess = AsyncIterable<string> & PromiseLike<ExecResult> & {
 	kill: (signal?: KillSignal) => boolean;
 	get killed(): boolean;
 	get pid(): number | undefined;
-	pipe: (command: string, args?: readonly string[], options?: Partial<Options>) => Subprocess;
+	pipe: <N extends ResultMode = 'result'>(command: string, args?: readonly string[], options?: Partial<Options> & { resultMode?: N }) => Subprocess<N>;
 	get process(): ChildProcess | undefined;
 	get signalCode(): string | undefined;
 };

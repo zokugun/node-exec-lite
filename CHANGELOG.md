@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog][keepachangelog], and this project adhe
 ### Added
 
 - add `args` and `cwd` informations to result
+- add `resultMode` option. So when its `merged`, `exec` returns only the `merged` output
 
 [v0.2.0] | 2026-11-11
 ---------------------

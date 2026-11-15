@@ -42,6 +42,22 @@ it('captures stderr', async () => {
 	expect(result.value!.stdout).toBe('');
 });
 
+it('returns only merged output when requested', async () => {
+	const result = await exec(
+		'node',
+		[
+			'-e',
+			"process.stdout.write('out'); process.stderr.write('err')",
+		],
+		{
+			resultMode: 'merged',
+		},
+	);
+
+	expect(result).toContain('out');
+	expect(result).toContain('err');
+});
+
 it('non-zero exitCode', async () => {
 	const result = await exec('node', ['-e', 'process.exit(1)'], {
 		stdio: 'ignore',
@@ -123,7 +139,7 @@ it.skipIf(process.platform !== 'win32')('double escapes for batch files', async 
 
 
 it('invalid spawn option', async () => {
-	const result = await exec('node', ['-e', "console.log('foo')"], { detached: 'true' } as unknown as Partial<Options>);
+	const result = await exec('node', ['-e', "console.log('foo')"], { detached: 'true' } as unknown as Partial<Options<'result'>>);
 
 	expect(result.fails).toBe(true);
 	expect(result.error!.error?.message).toContain('options.detached');

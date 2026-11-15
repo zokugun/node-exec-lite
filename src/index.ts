@@ -6,6 +6,7 @@ export {
 	ExecSuccess,
 	KillSignal,
 	Options,
+	ResultMode,
 	StdinOption,
 	StdioOption,
 	Subprocess,

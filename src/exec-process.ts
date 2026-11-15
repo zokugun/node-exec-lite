@@ -1,10 +1,10 @@
 import type { ChildProcess } from 'node:child_process';
 import type { Readable } from 'node:stream';
-import type { ExecFailure, ExecResult, ExecSuccess, KillSignal, Options, Subprocess } from './types.js';
+import type { ExecFailure, ExecResult, ExecSuccess, KillSignal, Options, ResultMode, Subprocess } from './types.js';
 
 import { spawn } from 'node:child_process';
 import readline from 'node:readline';
-import { err, ok } from '@zokugun/xtry';
+import { err, ok, stringifyError } from '@zokugun/xtry';
 
 import { exec } from './exec.js';
 import { normalizeCommand } from './utils/command/normalizeCommand.js';
@@ -12,7 +12,7 @@ import { normalizeOptions } from './utils/normalizeOptions.js';
 import { combineStreams } from './utils/stream/combineStreams.js';
 import { readStream, StreamContext } from './utils/stream/readStream.js';
 
-export class ExecProcess implements Subprocess {
+export class ExecProcess implements Subprocess<ResultMode> {
 	protected _aborted: boolean = false;
 	protected _args: readonly string[];
 	protected _command: string;
@@ -77,7 +77,7 @@ export class ExecProcess implements Subprocess {
 		return this._process?.kill(signal) === true;
 	} // }}}
 
-	public pipe(command: string, args?: readonly string[], options?: Partial<Options>): Subprocess { // {{{
+	public pipe<N extends ResultMode = 'result'>(command: string, args?: readonly string[], options?: Partial<Options> & { resultMode?: N }): Subprocess<N> { // {{{
 		return exec(command, args, {
 			...options,
 			stdin: this,
@@ -174,8 +174,14 @@ export class ExecProcess implements Subprocess {
 	} // }}}
 
 	// eslint-disable-next-line ts/promise-function-async
-	public then<TResult1 = ExecResult, TResult2 = never>(onfulfilled?: ((value: ExecResult) => PromiseLike<TResult1> | TResult1) | null, onrejected?: ((reason: unknown) => PromiseLike<TResult2> | TResult2) | null): Promise<TResult1 | TResult2> { // {{{
-		return this.toResult().then(onfulfilled, onrejected);
+	public then<TResult1 = ExecResult<ResultMode>, TResult2 = never>(onfulfilled?: ((value: ExecResult<ResultMode>) => PromiseLike<TResult1> | TResult1) | null, onrejected?: ((reason: unknown) => PromiseLike<TResult2> | TResult2) | null): Promise<TResult1 | TResult2> { // {{{
+		return this.toResult().then((result) => {
+			if(onfulfilled) {
+				return onfulfilled(result);
+			}
+
+			return result as unknown as TResult1;
+		}, onrejected);
 	} // }}}
 
 	protected onClose(): void { // {{{
@@ -206,8 +212,12 @@ export class ExecProcess implements Subprocess {
 		this._thrownError = undefined;
 	} // }}}
 
-	protected toFailure(error: Error): ExecFailure { // {{{
+	protected toFailure(error: Error): ExecResult<ResultMode> { // {{{
 		this._failed = true;
+
+		if(this._options.resultMode === 'merged') {
+			return stringifyError(error);
+		}
 
 		const result: ExecFailure = {
 			args: this._args,
@@ -221,18 +231,18 @@ export class ExecProcess implements Subprocess {
 			signalCode: this.signalCode,
 		};
 
-		return result;
+		return err(result);
 	} // }}}
 
-	protected async toResult(): Promise<ExecResult> { // {{{
+	protected async toResult(): Promise<ExecResult<ResultMode>> { // {{{
 		if(this._thrownError) {
-			return err(this.toFailure(this._thrownError));
+			return this.toFailure(this._thrownError);
 		}
 
 		const task = this._process;
 
 		if(!task) {
-			return err(this.toFailure(new Error('No process was started')));
+			return this.toFailure(new Error('No process was started'));
 		}
 
 		const context: StreamContext = { merged: '' };
@@ -253,7 +263,15 @@ export class ExecProcess implements Subprocess {
 		task.removeAllListeners();
 
 		if(this._thrownError) {
-			return err(this.toFailure(this._thrownError));
+			return this.toFailure(this._thrownError);
+		}
+
+		if(this._options.resultMode === 'merged') {
+			if((this.exitCode !== 0 && this.exitCode !== undefined) || this.signalCode !== undefined) {
+				this._failed = true;
+			}
+
+			return context.merged;
 		}
 
 		const result: ExecSuccess = {

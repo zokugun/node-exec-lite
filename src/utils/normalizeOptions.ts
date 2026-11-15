@@ -10,6 +10,7 @@ export function normalizeOptions(options: Options): SpawnOptions {
 		cwd,
 		env,
 		preferLocal,
+		resultMode: _resultMode,
 		signal,
 		stderr,
 		stdin,
