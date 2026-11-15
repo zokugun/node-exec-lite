@@ -12,7 +12,7 @@ import { normalizeOptions } from './utils/normalizeOptions.js';
 import { combineStreams } from './utils/stream/combineStreams.js';
 import { readStream, StreamContext } from './utils/stream/readStream.js';
 
-export class ExecProcess implements Subprocess<ResultMode> {
+class ExecProcess implements Subprocess<ResultMode> {
 	protected _aborted: boolean = false;
 	protected _args: readonly string[];
 	protected _command: string;
@@ -301,4 +301,15 @@ export class ExecProcess implements Subprocess<ResultMode> {
 
 		return ok(result);
 	} // }}}
+}
+
+export {
+	type ExecFailure,
+	type ExecResult,
+	type ExecSuccess,
+	type KillSignal,
+	type Options,
+	type ResultMode,
+	type Subprocess,
+	ExecProcess,
 }

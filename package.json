@@ -20,6 +20,18 @@
 		".": {
 			"import": "./lib/esm/index.mjs",
 			"require": "./lib/cjs/index.cjs"
+		},
+		"./command-line": {
+			"import": "./lib/esm/command-line.mjs",
+			"require": "./lib/cjs/command-line.cjs"
+		},
+		"./exec-process": {
+			"import": "./lib/esm/exec-process.mjs",
+			"require": "./lib/cjs/exec-process.cjs"
+		},
+		"./exec": {
+			"import": "./lib/esm/exec.mjs",
+			"require": "./lib/cjs/exec.cjs"
 		}
 	},
 	"main": "lib/cjs/index.cjs",
@@ -28,6 +40,15 @@
 		"*": {
 			".": [
 				"./lib/cjs/index.d.cts"
+			],
+			"command-line": [
+				"./lib/cjs/command-line.d.cts"
+			],
+			"exec-process": [
+				"./lib/cjs/exec-process.d.cts"
+			],
+			"exec": [
+				"./lib/cjs/exec.d.cts"
 			]
 		}
 	},

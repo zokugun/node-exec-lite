@@ -1,5 +1,8 @@
 entry:
   .: index.ts
+  create-command: create-command.ts
+  exec-process: exec-process.ts
+  exec: exec.ts
 format:
   - esm
   - cjs

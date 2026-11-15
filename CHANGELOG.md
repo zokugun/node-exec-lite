@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog][keepachangelog], and this project adhe
 
 - add `args` and `cwd` informations to result
 - add `resultMode` option. So when its `merged`, `exec` returns only the `merged` output
+- add `createCommand` function to generate helper to run pre-defined command
 
 [v0.2.0] | 2026-11-11
 ---------------------

@@ -1,6 +1,13 @@
 import type { ChildProcess, SpawnOptions as ProcessSpawnOptions } from 'node:child_process';
 import type { Result } from '@zokugun/xtry';
 
+export type Command<M extends ResultMode = 'result'> = {
+	(args?: readonly string[] | null, options?: Partial<Options<M>>): Subprocess<M>;
+	toCwdFirst(): (cwd: string, ...args: string[]) => Subprocess<M>;
+	toFlatArgs(): (...args: string[]) => Subprocess<M>;
+	withOptions(options: Partial<Options<M>>): Command<M>;
+}
+
 export type ExecFailure = {
 	args: readonly string[];
 	canceled: boolean;

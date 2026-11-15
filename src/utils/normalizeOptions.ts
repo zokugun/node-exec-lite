@@ -3,7 +3,7 @@ import type { Options, SpawnOptions } from '../types.js';
 import path from 'node:path';
 
 import { computeEnv } from './env/computeEnv.js';
-import { combineSignals } from '../combineSignals.js';
+import { combineSignals } from './combineSignals.js';
 
 export function normalizeOptions(options: Options): SpawnOptions {
 	const {
