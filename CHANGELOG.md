@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog][keepachangelog], and this project adhe
 [Unreleased]
 ------------
 
+### Changed
+
+- rename `all` property to `merged`
+
 ### Added
 
 - add `args` and `cwd` informations to result

@@ -2,7 +2,6 @@ import type { ChildProcess, SpawnOptions as ProcessSpawnOptions } from 'node:chi
 import type { Result } from '@zokugun/xtry';
 
 export type ExecFailure = {
-	all?: string;
 	args: readonly string[];
 	canceled: boolean;
 	cwd?: string;
@@ -10,6 +9,7 @@ export type ExecFailure = {
 	durationMs: number;
 	error?: Error;
 	exitCode?: number;
+	merged?: string;
 	pipedFrom?: ExecResult;
 	signalCode?: string;
 	stderr?: string;
@@ -19,13 +19,13 @@ export type ExecFailure = {
 export type ExecResult = Result<ExecSuccess, ExecFailure>;
 
 export type ExecSuccess = {
-	all: string;
 	args: readonly string[];
 	command: string;
 	cwd: string;
 	durationMs: number;
 	error?: undefined;
 	exitCode: number;
+	merged: string;
 	pipedFrom?: ExecResult;
 	stderr: string;
 	stdout: string;

@@ -210,7 +210,6 @@ export class ExecProcess implements Subprocess {
 		this._failed = true;
 
 		const result: ExecFailure = {
-			all: '',
 			args: this._args,
 			canceled: this._signal?.aborted ?? false,
 			command: this._command,
@@ -218,6 +217,7 @@ export class ExecProcess implements Subprocess {
 			durationMs: Number(process.hrtime.bigint() - this._start!) / 1e6,
 			error,
 			exitCode: this.exitCode,
+			merged: '',
 			signalCode: this.signalCode,
 		};
 
@@ -235,7 +235,7 @@ export class ExecProcess implements Subprocess {
 			return err(this.toFailure(new Error('No process was started')));
 		}
 
-		const context: StreamContext = { all: '' };
+		const context: StreamContext = { merged: '' };
 
 		const [stdout, stderr] = await Promise.all([
 			this._streamOut ? readStream(this._streamOut, context) : '',
@@ -257,12 +257,12 @@ export class ExecProcess implements Subprocess {
 		}
 
 		const result: ExecSuccess = {
-			all: context.all,
 			args: this._args,
 			command: this._command,
 			cwd: this._cwd!,
 			durationMs: Number(process.hrtime.bigint() - this._start!) / 1e6,
 			exitCode: this.exitCode!,
+			merged: context.merged,
 			stderr,
 			stdout,
 		};

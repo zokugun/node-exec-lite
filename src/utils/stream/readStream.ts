@@ -1,7 +1,7 @@
 import type { Readable } from 'node:stream';
 
 export type StreamContext = {
-	all: string;
+	merged: string;
 };
 
 export async function readStream(stream: Readable, context: StreamContext): Promise<string> {
@@ -10,7 +10,7 @@ export async function readStream(stream: Readable, context: StreamContext): Prom
 	try {
 		for await(const chunk of stream) {
 			output += String(chunk);
-			context.all += String(chunk);
+			context.merged += String(chunk);
 		}
 	}
 	catch {

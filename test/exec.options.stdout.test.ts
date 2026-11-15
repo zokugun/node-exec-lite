@@ -20,7 +20,7 @@ it('stdout=ignore', async () => {
 	expect(result.fails).toBe(false);
 	expect(result.value!.stdout).toBe('');
 	expect(result.value!.stderr).toContain('quxbaz');
-	expect(result.value!.all).toContain('quxbaz');
+	expect(result.value!.merged).toContain('quxbaz');
 	expect(result.value!.exitCode).toBe(0);
 });
 
@@ -39,7 +39,7 @@ it('stderr=ignore', async () => {
 	expect(result.fails).toBe(false);
 	expect(result.value!.stdout).toContain('foobar');
 	expect(result.value!.stderr).toBe('');
-	expect(result.value!.all).toContain('foobar');
+	expect(result.value!.merged).toContain('foobar');
 	expect(result.value!.exitCode).toBe(0);
 });
 
@@ -59,7 +59,7 @@ it('stdout=ignore,stderr=ignore', async () => {
 	expect(result.fails).toBe(false);
 	expect(result.value!.stdout).toBe('');
 	expect(result.value!.stderr).toBe('');
-	expect(result.value!.all).toBe('');
+	expect(result.value!.merged).toBe('');
 	expect(result.value!.exitCode).toBe(0);
 });
 
@@ -85,5 +85,5 @@ it('multibyte sequences', async () => {
 	expect(result.fails).toBe(false);
 
 	expect(result.value!.stdout).toContain(MULTIBYTE_STR);
-	expect(result.value!.all).toContain(MULTIBYTE_STR);
+	expect(result.value!.merged).toContain(MULTIBYTE_STR);
 });
