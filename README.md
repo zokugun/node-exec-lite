@@ -126,6 +126,47 @@ Spawns a child process and returns a `Subprocess` instance. The process starts i
 - `exec` does not throw. Errors surface through the `fails` flag of the `Result`.
 - On Windows, batch files (`.bat`, `.cmd`) are wrapped in `cmd.exe` with verbatim argument handling.
 
+#### `createCommand`
+
+```typescript
+import { createCommand } from '@zokugun/exec-lite';
+
+const git = createCommand('git', [], { resultMode: 'merged' });
+
+await git(['status'], { cwd: repository });
+await git.withOptions({ cwd: repository })(['status']);
+await git.toCwdFirst()(repository, 'status');
+await git.toFlatArgs()('status');
+```
+
+```typescript
+type Command = {
+	(args?: readonly string[] | null, options?: Partial<Options>): Subprocess;
+	toCwdFirst(): (cwd: string, ...args: string[]) => Subprocess;
+	toFlatArgs(): (...args: string[]) => Subprocess;
+	withOptions(options: Partial<Options>): Command;
+}
+```
+
+Creates a reusable command with optional default arguments and options.
+
+### Merged Result Mode
+
+Set `resultMode: 'merged'` to make the awaited subprocess resolve directly to a string containing combined stdout and stderr, rather than the default `Result` object:
+
+```typescript
+const task = exec('git', ['status'], { resultMode: 'merged' });
+const output = await task;
+
+console.log(output);
+
+if(task.failed) {
+   console.error(`Command failed with exit code: ${task.exitCode}`);
+}
+```
+
+The subprocess does not reject on a non-zero exit. Check `.failed` and, when needed, `.exitCode` or `.error` for process status and errors.
+
 ---
 
 ### Classes
@@ -165,10 +206,13 @@ The class behind every subprocess returned by `exec`. You rarely need to constru
 
 #### `ExecResult`
 
-A discriminated union wrapping success or failure:
+A structured success or failure result by default. In merged mode, this resolves directly to a string:
 
 ```typescript
-type ExecResult = Result<ExecSuccess, ExecFailure>;
+type ResultMode = 'result' | 'merged';
+type ExecResult<M extends ResultMode = 'result'> = M extends 'merged'
+   ? string
+   : Result<ExecSuccess, ExecFailure>;
 ```
 
 ---
@@ -179,10 +223,12 @@ Returned when the process exits with code 0 and no error occurred.
 
 ```typescript
 type ExecSuccess = {
-   all: string;        // combined stdout + stderr
+   args: readonly string[];
    command: string;
+   cwd: string;
    durationMs: number;
    exitCode: number;
+   merged: string;     // combined stdout + stderr
    stdout: string;
    stderr: string;
 };
@@ -196,12 +242,14 @@ Returned when the process errors, exits non-zero, or gets killed.
 
 ```typescript
 type ExecFailure = {
-   all?: string;
+   args: readonly string[];
    canceled: boolean;  // true if aborted via signal
    command: string;
+   cwd?: string;
    durationMs: number;
    error?: Error;
    exitCode?: number;
+   merged?: string;
    signalCode?: string;
    stderr?: string;
    stdout?: string;
@@ -221,24 +269,24 @@ The shape returned by `exec()`. It is:
 ```typescript
 type Subprocess = AsyncIterable<string> & PromiseLike<ExecResult> & { ... };
 ```
-
 ---
 
 #### `Options`
 
 Extended `SpawnOptions` with extra fields:
 
-| Field               | Type                                  | Default              | Description                           |
-| ------------------- | ------------------------------------- | -------------------- | ------------------------------------- |
-| `cwd`               | `string`                              | `process.cwd()`      | Working directory                     |
-| `env`               | `Record<string, string>`              | inherited + computed | Environment variables                 |
-| `localDir`          | `string`                              | `cwd`                | Directory to resolve local paths from |
-| `preferLocal`       | `boolean`                             | `false`              | Prepends `node_modules/.bin` to PATH  |
-| `signal`            | `AbortSignal`                         | none                 | Abort signal for cancellation         |
-| `stdin`             | `string \| Subprocess \| { process }` | `pipe`               | Input source                          |
-| `stdio`             |                                       | none                 | Standard I/O configurations.          |
-| `stdout` / `stderr` | `StdioOption`                         | none                 | Stream configuration                  |
-| `timeout`           | `number`                              | none                 | Auto-abort after N milliseconds       |
+| Field               | Type                                  | Default              | Description                                          |
+| ------------------- | ------------------------------------- | -------------------- | ---------------------------------------------------- |
+| `cwd`               | `string`                              | `process.cwd()`      | Working directory                                    |
+| `env`               | `Record<string, string>`              | inherited + computed | Environment variables                                |
+| `localDir`          | `string`                              | `cwd`                | Directory to resolve local paths from                |
+| `preferLocal`       | `boolean`                             | `false`              | Prepends `node_modules/.bin` to PATH                 |
+| `resultMode`        | `'result' \| 'merged'`                | `'result'`           | Resolve to a structured result or merged output text |
+| `signal`            | `AbortSignal`                         | none                 | Abort signal for cancellation                        |
+| `stdin`             | `string \| Subprocess \| { process }` | `'pipe'`             | Input source                                         |
+| `stdio`             |                                       | none                 | Standard I/O configurations.                         |
+| `stdout` / `stderr` | `StdioOption`                         | none                 | Stream configuration                                 |
+| `timeout`           | `number`                              | none                 | Auto-abort after N milliseconds                      |
 
 Contributions
 -------------
