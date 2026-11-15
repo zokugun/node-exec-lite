@@ -9,8 +9,9 @@ export function normalizeOptions(options: Options): SpawnOptions {
 	const {
 		cwd,
 		env,
+		onSuccess: _onSuccess,
+		onFailure: _onFailure,
 		preferLocal,
-		resultMode: _resultMode,
 		signal,
 		stderr,
 		stdin,

@@ -34,6 +34,25 @@ it('resolves to stdout', async () => {
 	expect(result.value!.stderr).toBe('');
 });
 
+it('uses handler return types and values for the awaited result', async () => {
+	const result = await exec('node', ['-e', "console.log('foo')"], {
+		onSuccess: (success) => success.value.stdout,
+		onFailure: (failure) => failure.error.exitCode?.toString() ?? '',
+	});
+
+	expect(result).toBe('foo\n');
+});
+
+it('calls onrejected from options with the failure result', async () => {
+	const result = await exec('node', ['-e', 'process.exit(1)'], {
+		stdio: 'ignore',
+		onSuccess: (success) => success.value.exitCode,
+		onFailure: (failure) => failure.error.exitCode ?? -1,
+	});
+
+	expect(result).toBe(1);
+});
+
 it('captures stderr', async () => {
 	const result = await exec('node', ['-e', "console.error('some error')"]);
 
@@ -42,20 +61,18 @@ it('captures stderr', async () => {
 	expect(result.value!.stdout).toBe('');
 });
 
-it('returns only merged output when requested', async () => {
+it('returns combined stdout and stderr in merged', async () => {
 	const result = await exec(
 		'node',
 		[
 			'-e',
 			"process.stdout.write('out'); process.stderr.write('err')",
 		],
-		{
-			resultMode: 'merged',
-		},
 	);
 
-	expect(result).toContain('out');
-	expect(result).toContain('err');
+	expect(result.fails).toBe(false);
+	expect(result.value!.merged).toContain('out');
+	expect(result.value!.merged).toContain('err');
 });
 
 it('non-zero exitCode', async () => {
@@ -139,7 +156,7 @@ it.skipIf(process.platform !== 'win32')('double escapes for batch files', async 
 
 
 it('invalid spawn option', async () => {
-	const result = await exec('node', ['-e', "console.log('foo')"], { detached: 'true' } as unknown as Partial<Options<'result'>>);
+	const result = await exec('node', ['-e', "console.log('foo')"], { detached: 'true' } as unknown as Partial<Options>);
 
 	expect(result.fails).toBe(true);
 	expect(result.error!.error?.message).toContain('options.detached');

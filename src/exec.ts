@@ -1,18 +1,17 @@
-import type { Options, ResultMode, Subprocess } from './types.js';
+import type { ExecOutput, Options, Subprocess } from './types.js';
 
 import { ExecProcess } from './exec-process.js';
 
-function exec<M extends ResultMode = 'result'>(command: string, args?: readonly string[] | null, options?: Partial<Options<M>>): Subprocess<M> {
-	const subprocess = new ExecProcess(command, args, options);
+function exec<O extends Partial<Options> = {}>(command: string, args?: readonly string[] | null, options?: O & Partial<Options>): Subprocess<ExecOutput<O>> {
+	const subprocess = new ExecProcess(command, args, options as Partial<Options> | undefined);
 
 	subprocess.spawn();
 
-	return subprocess as unknown as Subprocess<M>;
+	return subprocess as unknown as Subprocess<ExecOutput<O>>;
 }
 
 export {
 	type Options,
-	type ResultMode,
 	type Subprocess,
 	exec,
 }

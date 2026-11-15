@@ -5,7 +5,6 @@ export type {
 	ExecSuccess,
 	KillSignal,
 	Options,
-	ResultMode,
 	StdinOption,
 	StdioOption,
 	Subprocess,

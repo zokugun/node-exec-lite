@@ -1,10 +1,10 @@
 import type { ChildProcess } from 'node:child_process';
 import type { Readable } from 'node:stream';
-import type { ExecFailure, ExecResult, ExecSuccess, KillSignal, Options, ResultMode, Subprocess } from './types.js';
+import type { ExecFailure, ExecOutput, ExecResult, ExecSuccess, KillSignal, Options, Subprocess } from './types.js';
 
 import { spawn } from 'node:child_process';
 import readline from 'node:readline';
-import { err, ok, stringifyError } from '@zokugun/xtry';
+import { err, ok } from '@zokugun/xtry';
 
 import { exec } from './exec.js';
 import { normalizeCommand } from './utils/command/normalizeCommand.js';
@@ -12,7 +12,7 @@ import { normalizeOptions } from './utils/normalizeOptions.js';
 import { combineStreams } from './utils/stream/combineStreams.js';
 import { readStream, StreamContext } from './utils/stream/readStream.js';
 
-class ExecProcess implements Subprocess<ResultMode> {
+class ExecProcess implements Subprocess {
 	protected _aborted: boolean = false;
 	protected _args: readonly string[];
 	protected _command: string;
@@ -77,11 +77,11 @@ class ExecProcess implements Subprocess<ResultMode> {
 		return this._process?.kill(signal) === true;
 	} // }}}
 
-	public pipe<N extends ResultMode = 'result'>(command: string, args?: readonly string[], options?: Partial<Options> & { resultMode?: N }): Subprocess<N> { // {{{
+	public pipe<O extends Partial<Options> = {}>(command: string, args?: readonly string[], options?: O): Subprocess<ExecOutput<O>> { // {{{
 		return exec(command, args, {
 			...options,
 			stdin: this,
-		});
+		}) as unknown as Subprocess<ExecOutput<O>>;
 	} // }}}
 
 	public spawn(): void { // {{{
@@ -174,14 +174,30 @@ class ExecProcess implements Subprocess<ResultMode> {
 	} // }}}
 
 	// eslint-disable-next-line ts/promise-function-async
-	public then<TResult1 = ExecResult<ResultMode>, TResult2 = never>(onfulfilled?: ((value: ExecResult<ResultMode>) => PromiseLike<TResult1> | TResult1) | null, onrejected?: ((reason: unknown) => PromiseLike<TResult2> | TResult2) | null): Promise<TResult1 | TResult2> { // {{{
-		return this.toResult().then((result) => {
-			if(onfulfilled) {
-				return onfulfilled(result);
-			}
+	public then<R1 = ExecResult, R2 = never>(resolve?: ((value: ExecResult) => PromiseLike<R1> | R1) | null, reject?: ((error: unknown) => PromiseLike<R2> | R2) | null): Promise<R1 | R2> { // {{{
+		return this
+			.toResult()
+			.then((value) => {
+				if(value.fails) {
+					if(this._options.onFailure) {
+						return this._options.onFailure(value);
+					}
+				}
+				else {
+					if(this._options.onSuccess) {
+						return this._options.onSuccess(value);
+					}
+				}
 
-			return result as unknown as TResult1;
-		}, onrejected);
+				return value;
+			})
+			.then((value) => {
+				if(resolve) {
+					return resolve(value as ExecResult);
+				}
+
+				return value as unknown as R1;
+			}, reject);
 	} // }}}
 
 	protected onClose(): void { // {{{
@@ -212,12 +228,8 @@ class ExecProcess implements Subprocess<ResultMode> {
 		this._thrownError = undefined;
 	} // }}}
 
-	protected toFailure(error: Error): ExecResult<ResultMode> { // {{{
+	protected toFailure(error: Error): ExecResult { // {{{
 		this._failed = true;
-
-		if(this._options.resultMode === 'merged') {
-			return stringifyError(error);
-		}
 
 		const result: ExecFailure = {
 			args: this._args,
@@ -234,7 +246,7 @@ class ExecProcess implements Subprocess<ResultMode> {
 		return err(result);
 	} // }}}
 
-	protected async toResult(): Promise<ExecResult<ResultMode>> { // {{{
+	protected async toResult(): Promise<ExecResult> { // {{{
 		if(this._thrownError) {
 			return this.toFailure(this._thrownError);
 		}
@@ -264,14 +276,6 @@ class ExecProcess implements Subprocess<ResultMode> {
 
 		if(this._thrownError) {
 			return this.toFailure(this._thrownError);
-		}
-
-		if(this._options.resultMode === 'merged') {
-			if((this.exitCode !== 0 && this.exitCode !== undefined) || this.signalCode !== undefined) {
-				this._failed = true;
-			}
-
-			return context.merged;
 		}
 
 		const result: ExecSuccess = {
@@ -309,7 +313,6 @@ export {
 	type ExecSuccess,
 	type KillSignal,
 	type Options,
-	type ResultMode,
 	type Subprocess,
 	ExecProcess,
 }

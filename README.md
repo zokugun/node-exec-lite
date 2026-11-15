@@ -131,7 +131,7 @@ Spawns a child process and returns a `Subprocess` instance. The process starts i
 ```typescript
 import { createCommand } from '@zokugun/exec-lite';
 
-const git = createCommand('git', [], { resultMode: 'merged' });
+const git = createCommand('git');
 
 await git(['status'], { cwd: repository });
 await git.withOptions({ cwd: repository })(['status']);
@@ -149,23 +149,6 @@ type Command = {
 ```
 
 Creates a reusable command with optional default arguments and options.
-
-### Merged Result Mode
-
-Set `resultMode: 'merged'` to make the awaited subprocess resolve directly to a string containing combined stdout and stderr, rather than the default `Result` object:
-
-```typescript
-const task = exec('git', ['status'], { resultMode: 'merged' });
-const output = await task;
-
-console.log(output);
-
-if(task.failed) {
-   console.error(`Command failed with exit code: ${task.exitCode}`);
-}
-```
-
-The subprocess does not reject on a non-zero exit. Check `.failed` and, when needed, `.exitCode` or `.error` for process status and errors.
 
 ---
 
@@ -206,13 +189,10 @@ The class behind every subprocess returned by `exec`. You rarely need to constru
 
 #### `ExecResult`
 
-A structured success or failure result by default. In merged mode, this resolves directly to a string:
+A structured success or failure result:
 
 ```typescript
-type ResultMode = 'result' | 'merged';
-type ExecResult<M extends ResultMode = 'result'> = M extends 'merged'
-   ? string
-   : Result<ExecSuccess, ExecFailure>;
+type ExecResult = Result<ExecSuccess, ExecFailure>;
 ```
 
 ---
@@ -275,18 +255,19 @@ type Subprocess = AsyncIterable<string> & PromiseLike<ExecResult> & { ... };
 
 Extended `SpawnOptions` with extra fields:
 
-| Field               | Type                                  | Default              | Description                                          |
-| ------------------- | ------------------------------------- | -------------------- | ---------------------------------------------------- |
-| `cwd`               | `string`                              | `process.cwd()`      | Working directory                                    |
-| `env`               | `Record<string, string>`              | inherited + computed | Environment variables                                |
-| `localDir`          | `string`                              | `cwd`                | Directory to resolve local paths from                |
-| `preferLocal`       | `boolean`                             | `false`              | Prepends `node_modules/.bin` to PATH                 |
-| `resultMode`        | `'result' \| 'merged'`                | `'result'`           | Resolve to a structured result or merged output text |
-| `signal`            | `AbortSignal`                         | none                 | Abort signal for cancellation                        |
-| `stdin`             | `string \| Subprocess \| { process }` | `'pipe'`             | Input source                                         |
-| `stdio`             |                                       | none                 | Standard I/O configurations.                         |
-| `stdout` / `stderr` | `StdioOption`                         | none                 | Stream configuration                                 |
-| `timeout`           | `number`                              | none                 | Auto-abort after N milliseconds                      |
+| Field               | Type                                       | Default              | Description                                                                |
+| ------------------- | ------------------------------------------ | -------------------- | -------------------------------------------------------------------------- |
+| `cwd`               | `string`                                   | `process.cwd()`      | Working directory                                                          |
+| `env`               | `Record<string, string>`                   | inherited + computed | Environment variables                                                      |
+| `localDir`          | `string`                                   | `cwd`                | Directory to resolve local paths from                                      |
+| `onSuccess`         | `(value: Success<ExecSuccess>) => unknown` | none                 | Called for a successful result; its return value becomes the awaited value |
+| `onFailure`         | `(error: Failure<ExecFailure>) => unknown` | none                 | Called for a failed result; its return value becomes the awaited value     |
+| `preferLocal`       | `boolean`                                  | `false`              | Prepends `node_modules/.bin` to PATH                                       |
+| `signal`            | `AbortSignal`                              | none                 | Abort signal for cancellation                                              |
+| `stdin`             | `string \| Subprocess \| { process }`      | `'pipe'`             | Input source                                                               |
+| `stdio`             |                                            | none                 | Standard I/O configurations.                                               |
+| `stdout` / `stderr` | `StdioOption`                              | none                 | Stream configuration                                                       |
+| `timeout`           | `number`                                   | none                 | Auto-abort after N milliseconds                                            |
 
 Contributions
 -------------
