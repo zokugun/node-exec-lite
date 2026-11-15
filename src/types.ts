@@ -3,7 +3,9 @@ import type { Result } from '@zokugun/xtry';
 
 export type ExecFailure = {
 	all?: string;
+	args: readonly string[];
 	canceled: boolean;
+	cwd?: string;
 	command: string;
 	durationMs: number;
 	error?: Error;
@@ -18,7 +20,9 @@ export type ExecResult = Result<ExecSuccess, ExecFailure>;
 
 export type ExecSuccess = {
 	all: string;
+	args: readonly string[];
 	command: string;
+	cwd: string;
 	durationMs: number;
 	error?: undefined;
 	exitCode: number;

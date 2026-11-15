@@ -16,6 +16,7 @@ export class ExecProcess implements Subprocess {
 	protected _aborted: boolean = false;
 	protected _args: readonly string[];
 	protected _command: string;
+	protected _cwd: string | undefined;
 	protected _failed: boolean = false;
 	protected _options: Partial<Options>;
 	protected _process?: ChildProcess;
@@ -89,6 +90,8 @@ export class ExecProcess implements Subprocess {
 		this.reset();
 
 		const normalizedOptions = normalizeOptions(this._options);
+
+		this._cwd = normalizedOptions.cwd;
 
 		if(normalizedOptions.signal) {
 			this._signal = normalizedOptions.signal;
@@ -208,8 +211,10 @@ export class ExecProcess implements Subprocess {
 
 		const result: ExecFailure = {
 			all: '',
+			args: this._args,
 			canceled: this._signal?.aborted ?? false,
 			command: this._command,
+			cwd: this._cwd,
 			durationMs: Number(process.hrtime.bigint() - this._start!) / 1e6,
 			error,
 			exitCode: this.exitCode,
@@ -253,7 +258,9 @@ export class ExecProcess implements Subprocess {
 
 		const result: ExecSuccess = {
 			all: context.all,
+			args: this._args,
 			command: this._command,
+			cwd: this._cwd!,
 			durationMs: Number(process.hrtime.bigint() - this._start!) / 1e6,
 			exitCode: this.exitCode!,
 			stderr,
