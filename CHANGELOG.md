@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][keepachangelog], and this project adheres to [Semantic Versioning][semver].
 
+[unreleased]
+------------
+
+### Changed
+
+- the `stdin` option supports a `Readable` stream
+
+### Fixed
+
+- aborted results also have outputs
+
 [v0.4.0] | 2026-11-16
 ---------------------
 

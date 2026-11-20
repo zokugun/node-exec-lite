@@ -1,4 +1,5 @@
 import type { ChildProcess, SpawnOptions as ProcessSpawnOptions } from 'node:child_process';
+import type { Readable } from 'node:stream';
 import type { Failure, Result, Success } from '@zokugun/xtry';
 
 export type Command<O extends Partial<Options> = {}> = {
@@ -17,7 +18,7 @@ export type ExecFailure = {
 	error?: Error;
 	exitCode?: number;
 	merged?: string;
-	pipedFrom?: ExecResult;
+	pipedFrom?: Subprocess;
 	signalCode?: string;
 	stderr?: string;
 	stdout?: string;
@@ -37,7 +38,7 @@ export type ExecSuccess = {
 	error?: undefined;
 	exitCode: number;
 	merged: string;
-	pipedFrom?: ExecResult;
+	pipedFrom?: Subprocess;
 	stderr: string;
 	stdout: string;
 };
@@ -66,7 +67,7 @@ export type Options = Omit<ProcessSpawnOptions, 'cwd' | 'env' | 'stdio'> & Reado
 
 export type SpawnOptions = { cwd: string } & Omit<ProcessSpawnOptions, 'cwd'>;
 
-export type StdinOption = StdioOption | { readonly string?: string };
+export type StdinOption = StdioOption | Readable | { readonly string?: string };
 export type StdioOption = Readonly<Exclude<SpawnOptions['stdio'], undefined>[number]>;
 
 export type Subprocess<R = ExecResult> = AsyncIterable<string> & PromiseLike<R> & {

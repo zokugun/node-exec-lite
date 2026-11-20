@@ -1,9 +1,9 @@
 import type { ChildProcess } from 'node:child_process';
-import type { Readable } from 'node:stream';
 import type { ExecFailure, ExecOutput, ExecResult, ExecSuccess, KillSignal, Options, Subprocess } from './types.js';
 
 import { spawn } from 'node:child_process';
 import readline from 'node:readline';
+import { Readable } from 'node:stream';
 import { err, ok } from '@zokugun/xtry';
 
 import { exec } from './exec.js';
@@ -133,6 +133,9 @@ class ExecProcess implements Subprocess {
 			if(typeof stdin === 'string') {
 				task.stdin.end(stdin);
 			}
+			else if(stdin instanceof Readable) {
+				stdin.pipe(task.stdin);
+			}
 			else if(typeof stdin === 'object' && stdin !== null && 'process' in stdin) {
 				stdin.process?.stdout?.pipe(task.stdin);
 			}
@@ -228,7 +231,7 @@ class ExecProcess implements Subprocess {
 		this._thrownError = undefined;
 	} // }}}
 
-	protected toFailure(error: Error): ExecResult { // {{{
+	protected toFailure(error: Error, output?: Pick<ExecFailure, 'merged' | 'stderr' | 'stdout'>): ExecResult { // {{{
 		this._failed = true;
 
 		const result: ExecFailure = {
@@ -239,8 +242,10 @@ class ExecProcess implements Subprocess {
 			durationMs: Number(process.hrtime.bigint() - this._start!) / 1e6,
 			error,
 			exitCode: this.exitCode,
-			merged: '',
+			merged: output?.merged ?? '',
 			signalCode: this.signalCode,
+			stderr: output?.stderr ?? '',
+			stdout: output?.stdout ?? '',
 		};
 
 		return err(result);
@@ -275,7 +280,7 @@ class ExecProcess implements Subprocess {
 		task.removeAllListeners();
 
 		if(this._thrownError) {
-			return this.toFailure(this._thrownError);
+			return this.toFailure(this._thrownError, { merged: context.merged, stderr, stdout });
 		}
 
 		const result: ExecSuccess = {
@@ -289,9 +294,9 @@ class ExecProcess implements Subprocess {
 			stdout,
 		};
 
-		// if(this._options.stdin instanceof ExecProcess) {
-		// 	result.pipedFrom = this._options.stdin;
-		// }
+		if(this._options.stdin instanceof ExecProcess) {
+			result.pipedFrom = this._options.stdin;
+		}
 
 		if((this.exitCode !== 0 && this.exitCode !== undefined) || this.signalCode !== undefined) {
 			this._failed = true;
